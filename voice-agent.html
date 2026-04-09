@@ -1,0 +1,1298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vocalize — Multilingual Voice Agent</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #FAFAF8;
+  --surface: #FFFFFF;
+  --surface2: #F5F3EE;
+  --surface3: #EEEAE0;
+  --orange: #E8642A;
+  --orange-light: #FDF0E8;
+  --orange-mid: #F5A66E;
+  --orange-dark: #C44D18;
+  --text: #1A1714;
+  --text2: #5C554A;
+  --text3: #9C9488;
+  --border: rgba(0,0,0,0.08);
+  --border-strong: rgba(232,100,42,0.25);
+  --radius: 16px;
+  --radius-sm: 10px;
+  --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.08);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+nav {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(250,250,248,0.88);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 4vw;
+  display: flex; align-items: center; justify-content: space-between;
+  height: 64px;
+  animation: slideDown 0.5s cubic-bezier(0.16,1,0.3,1) both;
+}
+
+@keyframes slideDown {
+  from { opacity:0; transform:translateY(-20px); }
+  to   { opacity:1; transform:none; }
+}
+
+.nav-logo {
+  font-family: 'Fraunces', serif;
+  font-size: 1.5rem; font-weight: 600;
+  color: var(--text); letter-spacing: -0.02em;
+  display: flex; align-items: center; gap: 0.4rem;
+}
+.nav-logo .dot { color: var(--orange); }
+
+.nav-pills { display: flex; gap: 0.5rem; }
+.nav-pill {
+  font-size: 0.75rem; font-weight: 500; letter-spacing: 0.04em;
+  padding: 0.35rem 0.85rem; border-radius: 100px;
+  background: var(--surface2); color: var(--text2);
+  border: 1px solid var(--border); text-transform: uppercase;
+  font-family: 'JetBrains Mono', monospace;
+}
+.nav-pill.active { background: var(--orange-light); color: var(--orange-dark); border-color: var(--border-strong); }
+
+main { flex: 1; padding: 0 4vw; width: 100%; }
+
+.hero {
+  padding: 5rem 0 4rem;
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 3rem; align-items: center;
+  animation: fadeUp 0.7s 0.1s cubic-bezier(0.16,1,0.3,1) both;
+}
+
+@keyframes fadeUp {
+  from { opacity:0; transform:translateY(24px); }
+  to   { opacity:1; transform:none; }
+}
+
+.hero-eyebrow {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  font-size: 0.72rem; font-weight: 500; text-transform: uppercase;
+  letter-spacing: 0.1em; color: var(--orange);
+  background: var(--orange-light); border: 1px solid var(--border-strong);
+  padding: 0.3rem 0.85rem; border-radius: 100px;
+  font-family: 'JetBrains Mono', monospace;
+  margin-bottom: 1.25rem;
+}
+.hero-eyebrow::before { content:''; width:6px; height:6px; border-radius:50%; background:var(--orange); }
+
+.hero-title {
+  font-family: 'Fraunces', serif;
+  font-size: clamp(2.4rem, 4vw, 3.6rem);
+  font-weight: 700; line-height: 1.1;
+  letter-spacing: -0.03em; color: var(--text);
+  margin-bottom: 1.25rem;
+}
+.hero-title em { color: var(--orange); font-style: italic; }
+
+.hero-desc {
+  font-size: 1rem; line-height: 1.75; color: var(--text2);
+  max-width: 46ch; margin-bottom: 2rem;
+}
+
+.hero-stats {
+  display: flex; gap: 1.5rem;
+}
+.stat { display: flex; flex-direction: column; gap: 0.2rem; }
+.stat-num {
+  font-family: 'Fraunces', serif;
+  font-size: 2rem; font-weight: 600; color: var(--text);
+  line-height: 1;
+}
+.stat-label { font-size: 0.72rem; color: var(--text3); text-transform: uppercase; letter-spacing: 0.06em; }
+.stat-divider { width: 1px; background: var(--border); align-self: stretch; }
+
+.hero-right {
+  display: flex; align-items: center; justify-content: flex-end;
+  position: relative;
+}
+.hero-visual {
+  width: 100%; max-width: 380px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  padding: 2rem;
+  box-shadow: var(--shadow-lg);
+  position: relative; overflow: hidden;
+}
+.hero-visual::before {
+  content: '';
+  position: absolute; top: -40px; right: -40px;
+  width: 200px; height: 200px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(232,100,42,0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+.waveform {
+  display: flex; align-items: center; justify-content: center;
+  gap: 4px; height: 48px; margin-bottom: 1.25rem;
+}
+.wave-bar {
+  width: 4px; border-radius: 2px; background: var(--orange);
+  opacity: 0.3;
+  animation: waveIdle 1.8s ease-in-out infinite;
+}
+.wave-bar:nth-child(1) { height: 14px; animation-delay: 0s; }
+.wave-bar:nth-child(2) { height: 22px; animation-delay: 0.1s; }
+.wave-bar:nth-child(3) { height: 34px; animation-delay: 0.2s; }
+.wave-bar:nth-child(4) { height: 44px; animation-delay: 0.3s; opacity:0.6; }
+.wave-bar:nth-child(5) { height: 36px; animation-delay: 0.4s; opacity:0.8; }
+.wave-bar:nth-child(6) { height: 44px; animation-delay: 0.5s; opacity:1; }
+.wave-bar:nth-child(7) { height: 36px; animation-delay: 0.6s; opacity:0.8; }
+.wave-bar:nth-child(8) { height: 44px; animation-delay: 0.7s; opacity:0.6; }
+.wave-bar:nth-child(9) { height: 34px; animation-delay: 0.8s; opacity:0.4; }
+.wave-bar:nth-child(10){ height: 22px; animation-delay: 0.9s; opacity:0.3; }
+.wave-bar:nth-child(11){ height: 14px; animation-delay: 1.0s; opacity:0.2; }
+
+@keyframes waveIdle {
+  0%,100%{ transform: scaleY(1); }
+  50%      { transform: scaleY(0.4); }
+}
+
+.wave-bar.active {
+  animation: waveActive 0.4s ease-in-out infinite alternate;
+  opacity: 1 !important;
+}
+@keyframes waveActive {
+  from { transform: scaleY(0.3); }
+  to   { transform: scaleY(1.5); }
+}
+
+.hero-lang-chips { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 1rem; }
+.lang-chip {
+  font-size: 0.7rem; padding: 0.2rem 0.6rem;
+  border-radius: 100px; border: 1px solid var(--border);
+  background: var(--surface2); color: var(--text2);
+  font-family: 'JetBrains Mono', monospace;
+}
+.lang-chip.lit { background: var(--orange-light); border-color: var(--border-strong); color: var(--orange-dark); }
+.hero-caption { font-size: 0.78rem; color: var(--text3); text-align: center; }
+
+.divider {
+  height: 1px; background: var(--border);
+  margin: 0; width: 100%;
+}
+
+.section { padding: 3.5rem 0; animation: fadeUp 0.6s cubic-bezier(0.16,1,0.3,1) both; }
+
+.section-label {
+  font-size: 0.68rem; font-weight: 500; text-transform: uppercase;
+  letter-spacing: 0.12em; color: var(--orange);
+  font-family: 'JetBrains Mono', monospace;
+  margin-bottom: 0.6rem;
+}
+
+.section-title {
+  font-family: 'Fraunces', serif;
+  font-size: 1.5rem; font-weight: 600;
+  letter-spacing: -0.02em; margin-bottom: 1.5rem;
+}
+
+.bento { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+.bento-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 1.5rem;
+  box-shadow: var(--shadow);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.bento-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+.bento-card.wide { grid-column: span 2; }
+.bento-card.tall { grid-row: span 2; }
+
+.bento-icon {
+  width: 40px; height: 40px; border-radius: 12px;
+  background: var(--orange-light); border: 1px solid var(--border-strong);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem; margin-bottom: 1rem;
+}
+.bento-card-title {
+  font-family: 'Fraunces', serif;
+  font-size: 1rem; font-weight: 600; margin-bottom: 0.4rem;
+}
+.bento-card-desc { font-size: 0.82rem; color: var(--text2); line-height: 1.6; }
+
+.keys-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+.key-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 1.5rem;
+  box-shadow: var(--shadow);
+}
+
+.key-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 1rem;
+}
+.key-name {
+  font-size: 0.78rem; font-weight: 500;
+  font-family: 'JetBrains Mono', monospace; color: var(--text);
+}
+.badge {
+  font-size: 0.6rem; padding: 3px 8px; border-radius: 100px;
+  font-family: 'JetBrains Mono', monospace; letter-spacing: 0.04em;
+  text-transform: uppercase; font-weight: 500;
+}
+.badge-free { background: #E8F5E9; color: #2E7D32; border: 1px solid rgba(46,125,50,0.2); }
+.badge-optional { background: var(--orange-light); color: var(--orange-dark); border: 1px solid var(--border-strong); }
+.badge-saved { background: #E8F5E9; color: #2E7D32; border: 1px solid rgba(46,125,50,0.2); display:none; }
+.badge-saved.show { display: inline-block; }
+
+.key-input-row { display: flex; gap: 0.6rem; margin-bottom: 0.75rem; }
+.key-input {
+  flex: 1; background: var(--surface2); border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm); padding: 0.7rem 1rem; color: var(--text);
+  font-family: 'JetBrains Mono', monospace; font-size: 0.78rem;
+  outline: none; transition: border-color 0.2s;
+}
+.key-input:focus { border-color: var(--orange); background: var(--surface); }
+.key-input::placeholder { color: var(--text3); }
+
+.key-btn {
+  background: var(--orange); border: none;
+  border-radius: var(--radius-sm); color: #fff; padding: 0.7rem 1.1rem;
+  font-family: 'DM Sans', sans-serif; font-size: 0.8rem; font-weight: 500;
+  cursor: pointer; transition: background 0.2s, transform 0.1s;
+  white-space: nowrap;
+}
+.key-btn:hover { background: var(--orange-dark); }
+.key-btn:active { transform: scale(0.97); }
+
+.key-hint { font-size: 0.71rem; color: var(--text3); line-height: 1.5; }
+.key-hint a { color: var(--orange); text-decoration: none; }
+.key-hint a:hover { text-decoration: underline; }
+
+.tts-row {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 1.25rem 1.5rem;
+  display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap;
+  box-shadow: var(--shadow);
+}
+.tts-label { font-size: 0.72rem; color: var(--text3); font-family: 'JetBrains Mono', monospace; }
+.tts-options { display: flex; gap: 1rem; }
+.tts-option {
+  display: flex; align-items: center; gap: 0.5rem;
+  cursor: pointer; font-size: 0.85rem; color: var(--text2);
+  user-select: none;
+}
+.tts-option input[type="radio"] { accent-color: var(--orange); cursor: pointer; width: 16px; height: 16px; }
+.tts-quality {
+  margin-left: auto;
+  font-size: 0.68rem; font-family: 'JetBrains Mono', monospace;
+  padding: 4px 10px; border-radius: 100px;
+}
+.tts-q-browser { background: var(--surface2); color: var(--text3); border: 1px solid var(--border); }
+.tts-q-eleven  { background: var(--orange-light); color: var(--orange-dark); border: 1px solid var(--border-strong); }
+
+.controls-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.select-group { display: flex; flex-direction: column; gap: 0.4rem; }
+.select-label { font-size: 0.7rem; color: var(--text3); padding-left: 2px; letter-spacing: 0.04em; text-transform: uppercase; font-family: 'JetBrains Mono', monospace; }
+.styled-select {
+  width: 100%; background: var(--surface); border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm); padding: 0.75rem 1rem; color: var(--text);
+  font-family: 'DM Sans', sans-serif; font-size: 0.88rem;
+  outline: none; cursor: pointer; transition: border-color 0.2s;
+  box-shadow: var(--shadow);
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239C9488' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  padding-right: 2.5rem;
+}
+.styled-select:focus { border-color: var(--orange); }
+
+.mic-section {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 1.5rem; padding: 3rem 0 2rem;
+}
+
+.mic-ring {
+  position: relative;
+  display: flex; align-items: center; justify-content: center;
+  width: 120px; height: 120px;
+}
+
+.mic-ring::before, .mic-ring::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  border: 1.5px solid var(--border);
+  transition: all 0.3s;
+}
+.mic-ring::before { width: 100%; height: 100%; }
+.mic-ring::after  { width: 84%; height: 84%; }
+
+.mic-ring.listening::before {
+  border-color: rgba(232,100,42,0.3);
+  animation: ripple1 1.5s ease-out infinite;
+}
+.mic-ring.listening::after {
+  border-color: rgba(232,100,42,0.5);
+  animation: ripple2 1.5s ease-out infinite 0.3s;
+}
+.mic-ring.speaking::before { border-color: rgba(79,175,100,0.4); animation: none; }
+.mic-ring.speaking::after  { border-color: rgba(79,175,100,0.6); animation: none; }
+
+@keyframes ripple1 {
+  0%    { transform: scale(1);    opacity:1; }
+  100% { transform: scale(1.35); opacity:0; }
+}
+@keyframes ripple2 {
+  0%    { transform: scale(1);    opacity:1; }
+  100% { transform: scale(1.2);  opacity:0; }
+}
+
+.mic-btn {
+  width: 80px; height: 80px; border-radius: 50%;
+  border: 2px solid var(--border-strong);
+  background: var(--surface);
+  color: var(--text); font-size: 1.8rem;
+  cursor: pointer; transition: all 0.2s;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: var(--shadow-lg);
+  position: relative; z-index: 1;
+}
+.mic-btn:hover { background: var(--orange-light); transform: scale(1.06); }
+.mic-btn.listening {
+  background: var(--orange-light); border-color: var(--orange);
+  box-shadow: 0 0 0 0 rgba(232,100,42,0.4);
+  animation: micPulse 1.2s infinite;
+}
+.mic-btn.speaking {
+  background: #E8F5E9; border-color: #4CAF50;
+}
+
+@keyframes micPulse {
+  0%    { box-shadow: 0 0 0 0 rgba(232,100,42,0.4); }
+  70%   { box-shadow: 0 0 0 16px rgba(232,100,42,0); }
+  100% { box-shadow: 0 0 0 0 rgba(232,100,42,0); }
+}
+
+.status-line {
+  display: flex; flex-direction: column; align-items: center; gap: 0.3rem;
+}
+.status-text {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.78rem; color: var(--text3); text-align: center;
+  min-height: 1.2em;
+  transition: color 0.3s;
+}
+.status-text.active { color: var(--orange); }
+.status-text.error  { color: #E53935; }
+.status-text.speaking { color: #4CAF50; }
+
+.status-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--text3); transition: background 0.3s;
+}
+.status-dot.active    { background: var(--orange); animation: dotBlink 1s infinite; }
+.status-dot.speaking { background: #4CAF50; animation: dotBlink 0.7s infinite; }
+
+@keyframes dotBlink { 0%,100%{opacity:1;} 50%{opacity:0.2;} }
+
+.terminate-btn {
+  display: none;
+  background: #FFF0F0; border: 1.5px solid rgba(229,57,53,0.3);
+  color: #C62828; border-radius: 100px;
+  padding: 0.45rem 1.25rem;
+  font-family: 'DM Sans', sans-serif; font-size: 0.8rem; font-weight: 500;
+  cursor: pointer; transition: all 0.2s;
+  gap: 0.4rem; align-items: center;
+}
+.terminate-btn.visible { display: flex; }
+.terminate-btn:hover { background: #FFEBEE; border-color: rgba(229,57,53,0.6); }
+.terminate-btn::before { content:''; width:8px; height:8px; border-radius:50%; background:#E53935; flex-shrink:0; }
+
+.chat-section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  box-shadow: var(--shadow);
+  margin-bottom: 1.5rem;
+}
+
+.chat-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 1.25rem; padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border);
+}
+.chat-header-left {
+  font-family: 'Fraunces', serif;
+  font-size: 1rem; font-weight: 600;
+}
+.chat-header-right {
+  display: flex; gap: 0.5rem; align-items: center;
+}
+.chat-clear-btn {
+  font-size: 0.72rem; color: var(--text3);
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 100px; padding: 0.25rem 0.75rem;
+  cursor: pointer; font-family: 'DM Sans', sans-serif;
+  transition: all 0.2s;
+}
+.chat-clear-btn:hover { color: var(--orange); border-color: var(--border-strong); }
+
+.chat-messages {
+  display: flex; flex-direction: column; gap: 1rem;
+  max-height: 440px; overflow-y: auto;
+  padding-right: 0.25rem;
+}
+.chat-messages::-webkit-scrollbar { width: 3px; }
+.chat-messages::-webkit-scrollbar-thumb { background: var(--surface3); border-radius: 2px; }
+
+.empty-state {
+  display: flex; flex-direction: column; align-items: center; gap: 1rem;
+  padding: 3rem 1rem; text-align: center;
+  color: var(--text3); font-size: 0.82rem; line-height: 1.8;
+}
+.empty-icon {
+  width: 56px; height: 56px; border-radius: 50%;
+  background: var(--orange-light); border: 1px solid var(--border-strong);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.5rem;
+}
+.empty-steps { display: flex; flex-direction: column; gap: 0.4rem; }
+.empty-step {
+  display: flex; align-items: flex-start; gap: 0.6rem;
+  font-size: 0.78rem; text-align: left;
+}
+.empty-step-num {
+  width: 20px; height: 20px; border-radius: 50%;
+  background: var(--surface3); color: var(--text3);
+  font-size: 0.65rem; font-weight: 600;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; margin-top: 1px;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.message {
+  padding: 0.85rem 1.1rem; border-radius: 14px;
+  font-size: 0.88rem; line-height: 1.65;
+  animation: msgIn 0.3s cubic-bezier(0.16,1,0.3,1) both;
+  max-width: 86%;
+}
+@keyframes msgIn {
+  from { opacity:0; transform:translateY(8px) scale(0.98); }
+  to   { opacity:1; transform:none; }
+}
+
+.message.user {
+  background: var(--orange-light);
+  border: 1px solid var(--border-strong);
+  align-self: flex-end; color: var(--orange-dark);
+}
+.message.assistant {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  align-self: flex-start;
+}
+.msg-meta {
+  font-size: 0.62rem; font-family: 'JetBrains Mono', monospace;
+  color: var(--text3); margin-bottom: 0.35rem;
+  text-transform: uppercase; letter-spacing: 0.06em;
+}
+.message.user .msg-meta { color: rgba(196,77,24,0.7); text-align: right; }
+
+.thinking {
+  display: flex; gap: 5px; padding: 0.85rem 1.1rem;
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 14px; align-self: flex-start;
+}
+.thinking span {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--orange-mid); animation: bounce 1s infinite;
+}
+.thinking span:nth-child(2) { animation-delay: 0.15s; }
+.thinking span:nth-child(3) { animation-delay: 0.30s; }
+@keyframes bounce { 0%,80%,100%{transform:scale(0.7);opacity:0.4;} 40%{transform:scale(1.1);opacity:1;} }
+
+.project-info {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 2rem 2.5rem;
+  box-shadow: var(--shadow);
+  display: grid; grid-template-columns: 2fr 1fr;
+  gap: 2.5rem; align-items: center;
+}
+.project-desc {
+  font-size: 0.88rem; line-height: 1.8; color: var(--text2);
+}
+.project-desc strong { color: var(--text); font-weight: 600; }
+.project-accent {
+  width: 3px; height: 2.5rem;
+  background: var(--orange); border-radius: 2px;
+  display: inline-block; vertical-align: middle;
+  margin-right: 0.75rem;
+}
+
+.project-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.project-tag {
+  font-size: 0.68rem; padding: 0.3rem 0.7rem;
+  border-radius: 100px; background: var(--orange-light);
+  color: var(--orange-dark); border: 1px solid var(--border-strong);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+footer {
+  background: var(--text);
+  color: rgba(255,255,255,0.5);
+  padding: 2rem 4vw;
+  margin-top: auto;
+}
+.footer-inner {
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 1rem;
+}
+.footer-studio {
+  font-family: 'Fraunces', serif;
+  font-size: 0.9rem; color: rgba(255,255,255,0.85);
+}
+.footer-team {
+  font-size: 0.72rem; font-family: 'JetBrains Mono', monospace;
+  line-height: 1.8; color: rgba(255,255,255,0.45);
+}
+.footer-team span { color: rgba(232,100,42,0.8); }
+
+.live-waveform {
+  display: flex; align-items: center; justify-content: center;
+  gap: 3px; height: 32px; margin-top: 0.5rem;
+}
+.live-bar {
+  width: 3px; border-radius: 2px; background: var(--orange);
+  opacity: 0; height: 6px;
+  transition: height 0.1s, opacity 0.2s;
+}
+.live-waveform.active .live-bar {
+  opacity: 1;
+  animation: liveWave 0.5s ease-in-out infinite alternate;
+}
+.live-bar:nth-child(1)  { animation-delay: 0.00s; }
+.live-bar:nth-child(2)  { animation-delay: 0.05s; }
+.live-bar:nth-child(3)  { animation-delay: 0.10s; }
+.live-bar:nth-child(4)  { animation-delay: 0.15s; }
+.live-bar:nth-child(5)  { animation-delay: 0.20s; }
+.live-bar:nth-child(6)  { animation-delay: 0.25s; }
+.live-bar:nth-child(7)  { animation-delay: 0.30s; }
+.live-bar:nth-child(8)  { animation-delay: 0.35s; }
+.live-bar:nth-child(9)  { animation-delay: 0.40s; }
+.live-bar:nth-child(10) { animation-delay: 0.45s; }
+.live-bar:nth-child(11) { animation-delay: 0.50s; }
+.live-bar:nth-child(12) { animation-delay: 0.55s; }
+
+@keyframes liveWave {
+  from { height: 4px; }
+  to   { height: 26px; }
+}
+
+.toast {
+  position: fixed; bottom: 2rem; right: 2rem;
+  background: var(--text); color: #fff;
+  padding: 0.85rem 1.25rem; border-radius: var(--radius-sm);
+  font-size: 0.82rem; box-shadow: var(--shadow-lg);
+  transform: translateY(100px); opacity: 0;
+  transition: all 0.35s cubic-bezier(0.16,1,0.3,1);
+  z-index: 999; max-width: 320px; line-height: 1.5;
+}
+.toast.show { transform: none; opacity: 1; }
+.toast.success { border-left: 3px solid #4CAF50; }
+.toast.error   { border-left: 3px solid #E53935; }
+.toast.info    { border-left: 3px solid var(--orange); }
+
+@media (max-width: 768px) {
+  .hero { grid-template-columns: 1fr; }
+  .hero-right { display: none; }
+  .bento { grid-template-columns: 1fr 1fr; }
+  .bento-card.wide { grid-column: span 2; }
+  .keys-grid { grid-template-columns: 1fr; }
+  .controls-row { grid-template-columns: 1fr; }
+  .project-info { grid-template-columns: 1fr; }
+  .footer-inner { flex-direction: column; }
+}
+@media (max-width: 480px) {
+  .bento { grid-template-columns: 1fr; }
+  .bento-card.wide { grid-column: span 1; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">Vocalize<span class="dot">.</span></div>
+  <div class="nav-pills">
+    <span class="nav-pill active">v2.0</span>
+    <span class="nav-pill">Multilingual</span>
+  </div>
+</nav>
+
+<main>
+
+  <div class="hero">
+    <div class="hero-left">
+      <div class="hero-eyebrow">AI-Powered Voice Translation</div>
+      <h1 class="hero-title">
+        Speak once.<br><em>Heard everywhere.</em>
+      </h1>
+      <p class="hero-desc">
+        Real-time multilingual voice agent — speak in your language, get an AI response spoken back in kind. Powered by Groq's ultra-fast inference and ElevenLabs' natural voice synthesis.
+      </p>
+      <div class="hero-stats">
+        <div class="stat">
+          <span class="stat-num">14+</span>
+          <span class="stat-label">Languages</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat">
+          <span class="stat-num">~0.3s</span>
+          <span class="stat-label">Response time</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat">
+          <span class="stat-num">6</span>
+          <span class="stat-label">Agent roles</span>
+        </div>
+      </div>
+    </div>
+    <div class="hero-right">
+      <div class="hero-visual">
+        <div class="waveform" id="heroWave">
+          <div class="wave-bar"></div>
+          <div class="wave-bar"></div>
+          <div class="wave-bar"></div>
+          <div class="wave-bar"></div>
+          <div class="wave-bar"></div>
+          <div class="wave-bar"></div>
+          <div class="wave-bar"></div>
+          <div class="wave-bar"></div>
+          <div class="wave-bar"></div>
+          <div class="wave-bar"></div>
+          <div class="wave-bar"></div>
+        </div>
+        <div class="hero-lang-chips">
+          <span class="lang-chip lit">Tamil</span>
+          <span class="lang-chip lit">Hindi</span>
+          <span class="lang-chip">English</span>
+          <span class="lang-chip">Spanish</span>
+          <span class="lang-chip">Arabic</span>
+          <span class="lang-chip">French</span>
+          <span class="lang-chip">Japanese</span>
+          <span class="lang-chip">+ more</span>
+        </div>
+        <div class="hero-caption">Voice-to-voice AI in real time</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section" style="animation-delay:0.15s">
+    <div class="section-label">What it does</div>
+    <div class="section-title">Built for seamless communication</div>
+    <div class="bento">
+      <div class="bento-card wide">
+        <div class="bento-icon">🎙️</div>
+        <div class="bento-card-title">Real-time voice recognition</div>
+        <div class="bento-card-desc">Press the mic, speak naturally in your chosen language — the Web Speech API captures your voice and passes it to the AI with near-zero latency, then auto-restarts to keep the conversation flowing.</div>
+      </div>
+      <div class="bento-card">
+        <div class="bento-icon">🌐</div>
+        <div class="bento-card-title">14+ languages</div>
+        <div class="bento-card-desc">From Tamil to Japanese — speak in your native tongue and the AI always responds in the same language.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="section" style="animation-delay:0.2s">
+    <div class="section-label">Configuration</div>
+    <div class="section-title">API Keys</div>
+    <div class="keys-grid">
+      <div class="key-card">
+        <div class="key-header">
+          <span class="key-name">GROQ_API_KEY</span>
+          <div style="display:flex;gap:0.4rem;align-items:center;">
+            <span class="badge badge-free">Free</span>
+            <span class="badge badge-saved" id="groqSavedBadge">✓ Saved</span>
+          </div>
+        </div>
+        <div class="key-input-row">
+          <input class="key-input" type="password" id="apiKey" placeholder="gsk_..." />
+          <button class="key-btn" onclick="saveGroqKey()">Save</button>
+        </div>
+        <div class="key-hint">
+          Get a free key at <a href="https://console.groq.com" target="_blank">console.groq.com</a>
+          · 14,400 req/day · No card needed
+        </div>
+      </div>
+
+      <div class="key-card">
+        <div class="key-header">
+          <span class="key-name">ELEVENLABS_API_KEY</span>
+          <div style="display:flex;gap:0.4rem;align-items:center;">
+            <span class="badge badge-optional">Optional</span>
+            <span class="badge badge-saved" id="elevenSavedBadge">✓ Saved</span>
+          </div>
+        </div>
+        <div class="key-input-row">
+          <input class="key-input" type="password" id="elevenKey" placeholder="sk_..." />
+          <button class="key-btn" onclick="saveElevenKey()">Save</button>
+        </div>
+        <div class="key-hint">
+          Free tier at <a href="https://elevenlabs.io" target="_blank">elevenlabs.io</a>
+          · Tamil, Hindi & 29+ languages · No OS voice install needed
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:1rem;">
+      <div class="tts-row">
+        <span class="tts-label">VOICE ENGINE</span>
+        <div class="tts-options">
+          <label class="tts-option">
+            <input type="radio" name="ttsEngine" value="browser" id="ttsBrowser" checked onchange="updateTtsQuality()" />
+            Browser TTS
+          </label>
+          <label class="tts-option">
+            <input type="radio" name="ttsEngine" value="elevenlabs" id="ttsEleven" onchange="updateTtsQuality()" />
+            ElevenLabs
+          </label>
+        </div>
+        <span class="tts-quality tts-q-browser" id="ttsQualityBadge">OS voices · may vary by language</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="section" style="animation-delay:0.25s">
+    <div class="section-label">Voice Agent</div>
+    <div class="section-title">Configure &amp; Speak</div>
+
+    <div class="controls-row" style="margin-bottom:1.5rem;">
+      <div class="select-group">
+        <label class="select-label">Your language</label>
+        <select class="styled-select" id="inputLang">
+          <option value="en-US">🇺🇸 English</option>
+          <option value="es-ES">🇪🇸 Spanish</option>
+          <option value="fr-FR">🇫🇷 French</option>
+          <option value="de-DE">🇩🇪 German</option>
+          <option value="ja-JP">🇯🇵 Japanese</option>
+          <option value="ko-KR">🇰🇷 Korean</option>
+          <option value="zh-CN">🇨🇳 Chinese</option>
+          <option value="ar-SA">🇸🇦 Arabic</option>
+          <option value="hi-IN">🇮🇳 Hindi</option>
+          <option value="pt-BR">🇧🇷 Portuguese</option>
+          <option value="ta-IN">🇮🇳 Tamil</option>
+          <option value="ru-RU">🇷🇺 Russian</option>
+          <option value="it-IT">🇮🇹 Italian</option>
+        </select>
+      </div>
+      <div class="select-group">
+        <label class="select-label">Agent role</label>
+        <select class="styled-select" id="agentRole">
+          <option value="helpful assistant">General Assistant</option>
+          <option value="language tutor who corrects mistakes gently">Language Tutor</option>
+          <option value="travel guide with local tips">Travel Guide</option>
+          <option value="friendly customer support agent">Customer Support</option>
+          <option value="expert chef and cooking advisor">Cooking Expert</option>
+          <option value="medical information assistant (always recommend seeing a doctor)">Health Info</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="chat-section">
+      <div class="chat-header">
+        <div class="chat-header-left">Conversation</div>
+        <div class="chat-header-right">
+          <span id="convCount" style="font-size:0.72rem;color:var(--text3);font-family:'JetBrains Mono',monospace;">0 messages</span>
+          <button class="chat-clear-btn" onclick="clearConversation()">Clear</button>
+        </div>
+      </div>
+      <div class="chat-messages" id="chatArea">
+        <div class="empty-state" id="emptyState">
+          <div class="empty-icon">🌐</div>
+          <div class="empty-steps">
+            <div class="empty-step"><div class="empty-step-num">1</div><span>Paste your Groq API key above and click Save</span></div>
+            <div class="empty-step"><div class="empty-step-num">2</div><span>Optionally add ElevenLabs key for premium multilingual voice</span></div>
+            <div class="empty-step"><div class="empty-step-num">3</div><span>Choose your language and agent role</span></div>
+            <div class="empty-step"><div class="empty-step-num">4</div><span>Press the mic below and start speaking naturally</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mic-section">
+      <div class="live-waveform" id="liveWaveform">
+        <div class="live-bar"></div><div class="live-bar"></div>
+        <div class="live-bar"></div><div class="live-bar"></div>
+        <div class="live-bar"></div><div class="live-bar"></div>
+        <div class="live-bar"></div><div class="live-bar"></div>
+        <div class="live-bar"></div><div class="live-bar"></div>
+        <div class="live-bar"></div><div class="live-bar"></div>
+      </div>
+
+      <div class="mic-ring" id="micRing">
+        <button class="mic-btn" id="micBtn" onclick="toggleListening()">🎙️</button>
+      </div>
+
+      <div class="status-line">
+        <div class="status-dot" id="statusDot"></div>
+        <div class="status-text" id="statusText">Enter your Groq API key, then press the mic</div>
+      </div>
+
+      <button class="terminate-btn" id="terminateBtn" onclick="terminateSession()">
+        Stop Session
+      </button>
+    </div>
+
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="section" style="animation-delay:0.3s">
+  <div class="project-info">
+    <div>
+      <div class="section-label" style="margin-bottom:0.75rem;">About this project</div>
+      <p class="project-desc" style="text-align: justify;">
+        <strong>Vocalize</strong> is a <strong>Multilingual AI Voice Translator</strong> built to bridge language barriers in real time. Speak in your native tongue — the agent captures your voice, processes it through Groq's blazing-fast LLM inference, and speaks a natural-sounding reply back in the same language in a fraction of a second. Powered by the Llama 3.3 70B model and ElevenLabs' multilingual v2 voice engine, Vocalize supports 13+ languages including Tamil, Hindi, Arabic, Japanese, and more — enabling genuine cross-language dialogue without switching apps or manual translation.
+      </p>
+      <div class="project-tags" style="margin-top:1rem;">
+      </div>
+    </div>
+    <div>
+        <div class="section-label" style="margin-bottom:0.75rem;">Team Members</div>
+        <div style="display:flex;flex-direction:column;gap:0.6rem;">
+          <div style="display:flex;justify-content:space-between;font-size:0.78rem;padding:0.6rem 0.85rem;background:var(--surface2);border-radius:var(--radius-sm);border:1px solid var(--border);">
+            <span style="color:var(--text3);font-family:'JetBrains Mono',monospace;font-size:0.7rem;">Aakhashii JP</span>
+            <span style="color:var(--text);font-weight:500;">24CS003</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:0.78rem;padding:0.6rem 0.85rem;background:var(--surface2);border-radius:var(--radius-sm);border:1px solid var(--border);">
+            <span style="color:var(--text3);font-family:'JetBrains Mono',monospace;font-size:0.7rem;">Antony Rojes Corera M</span>
+            <span style="color:var(--text);font-weight:500;">24CS017</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:0.78rem;padding:0.6rem 0.85rem;background:var(--surface2);border-radius:var(--radius-sm);border:1px solid var(--border);">
+            <span style="color:var(--text3);font-family:'JetBrains Mono',monospace;font-size:0.7rem;">Ashwin S</span>
+            <span style="color:var(--text);font-weight:500;">24CS024</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:0.78rem;padding:0.6rem 0.85rem;background:var(--surface2);border-radius:var(--radius-sm);border:1px solid var(--border);">
+            <span style="color:var(--text3);font-family:'JetBrains Mono',monospace;font-size:0.7rem;">Dinakar S</span>
+            <span style="color:var(--text);font-weight:500;">24CS056</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <div>
+      <div class="footer-studio">Design Studio II</div>
+      <div class="footer-team" style="margin-top:0.4rem;">
+      </div>
+    </div>
+    <div style="text-align:right;">
+      <div style="font-family:'Fraunces',serif;font-size:1.2rem;color:rgba(255,255,255,0.85);">Vocalize<span style="color:var(--orange)">.</span></div>
+      <div style="font-size:0.68rem;margin-top:0.25rem;font-family:'JetBrains Mono',monospace;">Multilingual AI Voice Agent</div>
+    </div>
+  </div>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script>
+let isListening      = false;
+let isSpeaking       = false;
+let autoRestart      = false;   
+let terminated       = false;
+let conversationHistory = [];
+let savedGroqKey     = '';
+let savedElevenKey   = '';
+let msgCount         = 0;
+
+const ELEVEN_VOICE_ID = 'N2lVS1w4EtoT3dr4eOWO';
+
+function showToast(msg, type = 'info') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `toast ${type} show`;
+  setTimeout(() => t.classList.remove('show'), 3500);
+}
+
+function saveGroqKey() {
+  const val = document.getElementById('apiKey').value.trim();
+  if (!val.startsWith('gsk_')) {
+    showToast('Groq key must start with gsk_ — check and try again', 'error');
+    return;
+  }
+  savedGroqKey = val;
+  document.getElementById('groqSavedBadge').classList.add('show');
+  setStatus('Ready! Press the mic and speak 🎙️', '');
+  showToast('Groq key saved — ready to go!', 'success');
+}
+
+function saveElevenKey() {
+  const val = document.getElementById('elevenKey').value.trim();
+  if (!val) { showToast('Please paste your ElevenLabs key first', 'error'); return; }
+  savedElevenKey = val;
+  document.getElementById('elevenSavedBadge').classList.add('show');
+  document.getElementById('ttsEleven').checked = true;
+  updateTtsQuality();
+  showToast('ElevenLabs voice ready — premium quality enabled', 'success');
+}
+
+function updateTtsQuality() {
+  const engine = document.querySelector('input[name="ttsEngine"]:checked').value;
+  const badge  = document.getElementById('ttsQualityBadge');
+  if (engine === 'elevenlabs') {
+    badge.textContent = 'eleven_multilingual_v2 · 29+ languages';
+    badge.className   = 'tts-quality tts-q-eleven';
+  } else {
+    badge.textContent = 'OS voices · may vary by language';
+    badge.className   = 'tts-quality tts-q-browser';
+  }
+}
+
+function setStatus(msg, type) {
+  const el  = document.getElementById('statusText');
+  const dot = document.getElementById('statusDot');
+  el.textContent = msg;
+  el.className   = 'status-text' + (type ? ' ' + type : '');
+  dot.className  = 'status-dot'  + (type ? ' ' + type : '');
+}
+
+function setWaveform(state) {
+  const lw = document.getElementById('liveWaveform');
+  const hw = document.getElementById('heroWave');
+  const bars = hw.querySelectorAll('.wave-bar');
+  if (state === 'listening') {
+    lw.classList.add('active');
+    bars.forEach(b => b.classList.add('active'));
+  } else {
+    lw.classList.remove('active');
+    bars.forEach(b => b.classList.remove('active'));
+  }
+}
+
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+let recognition;
+
+if (SpeechRecognition) {
+  recognition = new SpeechRecognition();
+  recognition.continuous     = false;
+  recognition.interimResults = false;
+
+  recognition.onresult = async (e) => {
+    const transcript = e.results[0][0].transcript;
+    stopListening();
+    addMessage('user', transcript);
+    await getAIResponse(transcript);
+  };
+
+  recognition.onerror = (e) => {
+    if (e.error === 'aborted') return; 
+    stopListening();
+    setStatus('Mic error: ' + e.error + ' — check browser permissions', 'error');
+  };
+
+  recognition.onend = () => {
+    if (isListening) {
+      isListening = false;
+      updateMicUI(false);
+    }
+  };
+} else {
+  document.getElementById('statusText').textContent =
+    '⚠️ Web Speech API not supported — use Chrome or Edge';
+}
+
+function toggleListening() {
+  if (!savedGroqKey) { showToast('Save your Groq API key first ↑', 'error'); return; }
+  if (isSpeaking) return;
+  terminated = false;
+  isListening ? stopListening() : startListening();
+}
+
+function startListening() {
+  if (!recognition) return;
+  const lang = document.getElementById('inputLang').value;
+  recognition.lang = lang;
+  try { recognition.start(); } catch(e) { return; }
+  isListening = true;
+  updateMicUI(true);
+  setStatus('Listening… speak now', 'active');
+  setWaveform('listening');
+  document.getElementById('terminateBtn').classList.add('visible');
+}
+
+function stopListening() {
+  try { recognition.stop(); } catch(e) {}
+  isListening = false;
+  updateMicUI(false);
+  setWaveform('idle');
+}
+
+function updateMicUI(listening) {
+  const btn  = document.getElementById('micBtn');
+  const ring = document.getElementById('micRing');
+  if (listening) {
+    btn.classList.add('listening');
+    btn.classList.remove('speaking');
+    ring.classList.add('listening');
+    ring.classList.remove('speaking');
+    btn.textContent = '⏹️';
+  } else if (!isSpeaking) {
+    btn.classList.remove('listening', 'speaking');
+    ring.classList.remove('listening', 'speaking');
+    btn.textContent = '🎙️';
+  }
+}
+
+function setSpeakingUI(speaking) {
+  const btn  = document.getElementById('micBtn');
+  const ring = document.getElementById('micRing');
+  isSpeaking = speaking;
+  if (speaking) {
+    btn.classList.remove('listening');
+    btn.classList.add('speaking');
+    ring.classList.remove('listening');
+    ring.classList.add('speaking');
+    btn.textContent = '🔊';
+    setStatus('Speaking response…', 'speaking');
+  } else {
+    btn.classList.remove('speaking', 'listening');
+    ring.classList.remove('speaking', 'listening');
+    btn.textContent = '🎙️';
+  }
+}
+
+function terminateSession() {
+  terminated = true;
+  autoRestart = false;
+  stopListening();
+  window.speechSynthesis.cancel();
+  isSpeaking = false;
+  setSpeakingUI(false);
+  setWaveform('idle');
+  setStatus('Session terminated. Press mic to start again.', '');
+  document.getElementById('terminateBtn').classList.remove('visible');
+  showToast('Session ended', 'info');
+}
+
+function clearConversation() {
+  conversationHistory = [];
+  msgCount = 0;
+  const area = document.getElementById('chatArea');
+  area.innerHTML = '';
+  const empty = document.createElement('div');
+  empty.className = 'empty-state'; empty.id = 'emptyState';
+  empty.innerHTML = `<div class="empty-icon">🌐</div><div class="empty-steps">
+    <div class="empty-step"><div class="empty-step-num">1</div><span>Paste your Groq API key above and click Save</span></div>
+    <div class="empty-step"><div class="empty-step-num">2</div><span>Optionally add ElevenLabs key for premium multilingual voice</span></div>
+    <div class="empty-step"><div class="empty-step-num">3</div><span>Choose your language and agent role</span></div>
+    <div class="empty-step"><div class="empty-step-num">4</div><span>Press the mic below and start speaking naturally</span></div>
+  </div>`;
+  area.appendChild(empty);
+  document.getElementById('convCount').textContent = '0 messages';
+  showToast('Conversation cleared', 'info');
+}
+
+function addMessage(role, text, langCode) {
+  const area  = document.getElementById('chatArea');
+  const empty = area.querySelector('.empty-state');
+  if (empty) empty.remove();
+
+  msgCount++;
+  document.getElementById('convCount').textContent =
+    msgCount + ' message' + (msgCount !== 1 ? 's' : '');
+
+  const div = document.createElement('div');
+  div.className = 'message ' + role;
+
+  const meta = document.createElement('div');
+  meta.className = 'msg-meta';
+  if (role === 'user') {
+    const lang = document.getElementById('inputLang');
+    meta.textContent = lang.options[lang.selectedIndex].text.replace(/^.+ /, '') + ' · You';
+  } else {
+    meta.textContent = (langCode ? langCode.split('-')[0].toUpperCase() : 'AI') + ' · Vocalize';
+  }
+  div.appendChild(meta);
+
+  const p = document.createElement('div');
+  p.textContent = text;
+  div.appendChild(p);
+  area.appendChild(div);
+  area.scrollTop = area.scrollHeight;
+}
+
+function showThinking() {
+  const area = document.getElementById('chatArea');
+  const d = document.createElement('div');
+  d.className = 'thinking'; d.id = 'thinkingDot';
+  d.innerHTML = '<span></span><span></span><span></span>';
+  area.appendChild(d);
+  area.scrollTop = area.scrollHeight;
+}
+function hideThinking() { document.getElementById('thinkingDot')?.remove(); }
+
+async function getAIResponse(userText) {
+  if (terminated) return;
+  const role = document.getElementById('agentRole').value;
+  const lang = document.getElementById('inputLang').value;
+  conversationHistory.push({ role: 'user', content: userText });
+  showThinking();
+  setStatus('Thinking…', 'active');
+
+  try {
+    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${savedGroqKey}` },
+      body: JSON.stringify({
+        model: 'llama-3.3-70b-versatile',
+        max_tokens: 300,
+        messages: [
+          {
+            role: 'system',
+            content: `You are a ${role}. The user is speaking in locale ${lang}.
+Always reply in the EXACT same language the user used.
+Keep replies to 2-3 sentences maximum — responses will be read aloud.
+Do not use markdown, bullet points, or special symbols.`
+          },
+          ...conversationHistory
+        ]
+      })
+    });
+
+    if (!response.ok) {
+      const err = await response.json();
+      throw new Error(err.error?.message || response.statusText);
+    }
+
+    const data  = await response.json();
+    const reply = data.choices?.[0]?.message?.content || 'Sorry, I could not generate a response.';
+    conversationHistory.push({ role: 'assistant', content: reply });
+    hideThinking();
+    addMessage('assistant', reply, lang);
+    if (!terminated) await speak(reply, lang);
+
+  } catch (err) {
+    hideThinking();
+    addMessage('assistant', '⚠️ ' + err.message);
+    setStatus('Error — see message above', 'error');
+    showToast(err.message, 'error');
+  }
+}
+
+async function speak(text, lang) {
+  if (terminated) return;
+  const engine = document.querySelector('input[name="ttsEngine"]:checked').value;
+  setSpeakingUI(true);
+
+  try {
+    if (engine === 'elevenlabs' && savedElevenKey) {
+      await speakElevenLabs(text);
+    } else {
+      if (engine === 'elevenlabs' && !savedElevenKey) {
+        showToast('No ElevenLabs key — using browser TTS', 'info');
+        await new Promise(r => setTimeout(r, 800));
+      }
+      await speakBrowser(text, lang);
+    }
+  } catch (err) {
+    console.warn('TTS failed, falling back to browser:', err.message);
+    await speakBrowser(text, lang);
+  }
+
+  if (!terminated) {
+    setSpeakingUI(false);
+    setStatus('Listening… speak now', 'active');
+    startListening();
+  }
+}
+
+async function speakElevenLabs(text) {
+  const response = await fetch(
+    `https://api.elevenlabs.io/v1/text-to-speech/${ELEVEN_VOICE_ID}`, {
+      method: 'POST',
+      headers: { 'xi-api-key': savedElevenKey, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        text,
+        model_id: 'eleven_multilingual_v2',
+        voice_settings: { stability: 0.5, similarity_boost: 0.75 }
+      })
+    }
+  );
+  if (!response.ok) {
+    const errText = await response.text();
+    throw new Error(`ElevenLabs ${response.status}: ${errText}`);
+  }
+  const blob = await response.blob();
+  if (blob.size === 0) throw new Error('ElevenLabs returned empty audio');
+  const url   = URL.createObjectURL(blob);
+  const audio = new Audio(url);
+  return new Promise((resolve, reject) => {
+    audio.onended = () => { URL.revokeObjectURL(url); resolve(); };
+    audio.onerror = ()  => { URL.revokeObjectURL(url); reject(new Error('Audio playback failed')); };
+    audio.play().catch(reject);
+  });
+}
+
+function speakBrowser(text, lang) {
+  return new Promise((resolve) => {
+    window.speechSynthesis.cancel();
+    const utter = new SpeechSynthesisUtterance(text);
+    utter.rate  = 0.95; utter.pitch = 1;
+    const voices     = speechSynthesis.getVoices();
+    const langPrefix = lang.split('-')[0];
+    const voice      = voices.find(v => v.lang === lang)
+                    || voices.find(v => v.lang.startsWith(langPrefix))
+                    || voices.find(v => v.lang.startsWith('en'));
+    if (voice) { utter.voice = voice; utter.lang = voice.lang; }
+    else        { utter.lang = lang; }
+    utter.onend  = resolve;
+    utter.onerror = resolve;
+    speechSynthesis.speak(utter);
+    const timeout = setTimeout(resolve, text.length * 80 + 4000);
+    utter.onend = () => { clearTimeout(timeout); resolve(); };
+  });
+}
+
+speechSynthesis.onvoiceschanged = () => speechSynthesis.getVoices();
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.style.opacity = '1';
+      e.target.style.transform = 'none';
+    }
+  });
+}, { threshold: 0.1 });
+document.querySelectorAll('.section, .bento-card, .key-card').forEach(el => {
+  el.style.transition = 'opacity 0.5s ease, transform 0.5s cubic-bezier(0.16,1,0.3,1)';
+  observer.observe(el);
+});
+</script>
+</body>
+</html>
