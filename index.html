@@ -540,12 +540,6 @@ main { flex: 1; padding: 0 4vw; width: 100%; }
   font-size: 0.88rem; line-height: 1.8; color: var(--text2);
 }
 .project-desc strong { color: var(--text); font-weight: 600; }
-.project-accent {
-  width: 3px; height: 2.5rem;
-  background: var(--orange); border-radius: 2px;
-  display: inline-block; vertical-align: middle;
-  margin-right: 0.75rem;
-}
 
 .project-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; }
 .project-tag {
@@ -569,11 +563,6 @@ footer {
   font-family: 'Fraunces', serif;
   font-size: 0.9rem; color: rgba(255,255,255,0.85);
 }
-.footer-team {
-  font-size: 0.72rem; font-family: 'JetBrains Mono', monospace;
-  line-height: 1.8; color: rgba(255,255,255,0.45);
-}
-.footer-team span { color: rgba(232,100,42,0.8); }
 
 .live-waveform {
   display: flex; align-items: center; justify-content: center;
@@ -669,7 +658,7 @@ footer {
         </div>
         <div class="stat-divider"></div>
         <div class="stat">
-          <span class="stat-num">6</span>
+          <span class="stat-num">7</span>
           <span class="stat-label">Agent roles</span>
         </div>
       </div>
@@ -677,16 +666,11 @@ footer {
     <div class="hero-right">
       <div class="hero-visual">
         <div class="waveform" id="heroWave">
-          <div class="wave-bar"></div>
-          <div class="wave-bar"></div>
-          <div class="wave-bar"></div>
-          <div class="wave-bar"></div>
-          <div class="wave-bar"></div>
-          <div class="wave-bar"></div>
-          <div class="wave-bar"></div>
-          <div class="wave-bar"></div>
-          <div class="wave-bar"></div>
-          <div class="wave-bar"></div>
+          <div class="wave-bar"></div><div class="wave-bar"></div>
+          <div class="wave-bar"></div><div class="wave-bar"></div>
+          <div class="wave-bar"></div><div class="wave-bar"></div>
+          <div class="wave-bar"></div><div class="wave-bar"></div>
+          <div class="wave-bar"></div><div class="wave-bar"></div>
           <div class="wave-bar"></div>
         </div>
         <div class="hero-lang-chips">
@@ -809,14 +793,38 @@ footer {
       </div>
       <div class="select-group">
         <label class="select-label">Agent role</label>
-        <select class="styled-select" id="agentRole">
+        <select class="styled-select" id="agentRole" onchange="onRoleChange()">
           <option value="helpful assistant">General Assistant</option>
           <option value="language tutor who corrects mistakes gently">Language Tutor</option>
           <option value="travel guide with local tips">Travel Guide</option>
           <option value="friendly customer support agent">Customer Support</option>
           <option value="expert chef and cooking advisor">Cooking Expert</option>
           <option value="medical information assistant (always recommend seeing a doctor)">Health Info</option>
+          <option value="translator">Translator</option>
         </select>
+      </div>
+    </div>
+
+    <!-- Translator target language selector — shown only when Translator role is active -->
+    <div id="translatorRow" style="display:none;margin-bottom:1.5rem;">
+      <div class="tts-row" style="background:var(--orange-light);border-color:var(--border-strong);">
+        <span class="tts-label" style="color:var(--orange-dark);">TRANSLATE INTO</span>
+        <select class="styled-select" id="targetLang" style="flex:1;max-width:260px;background:var(--surface);">
+          <option value="English">🇺🇸 English</option>
+          <option value="Spanish">🇪🇸 Spanish</option>
+          <option value="French">🇫🇷 French</option>
+          <option value="German">🇩🇪 German</option>
+          <option value="Japanese">🇯🇵 Japanese</option>
+          <option value="Korean">🇰🇷 Korean</option>
+          <option value="Chinese">🇨🇳 Chinese</option>
+          <option value="Arabic">🇸🇦 Arabic</option>
+          <option value="Hindi">🇮🇳 Hindi</option>
+          <option value="Portuguese">🇧🇷 Portuguese</option>
+          <option value="Tamil">🇮🇳 Tamil</option>
+          <option value="Russian">🇷🇺 Russian</option>
+          <option value="Italian">🇮🇹 Italian</option>
+        </select>
+        <span style="font-size:0.72rem;color:var(--orange-dark);font-family:'JetBrains Mono',monospace;">Speak any language → get translation</span>
       </div>
     </div>
 
@@ -870,16 +878,14 @@ footer {
   <div class="divider"></div>
 
   <div class="section" style="animation-delay:0.3s">
-  <div class="project-info">
-    <div>
-      <div class="section-label" style="margin-bottom:0.75rem;">About this project</div>
-      <p class="project-desc" style="text-align: justify;">
-        <strong>Vocalize</strong> is a <strong>Multilingual AI Voice Translator</strong> built to bridge language barriers in real time. Speak in your native tongue — the agent captures your voice, processes it through Groq's blazing-fast LLM inference, and speaks a natural-sounding reply back in the same language in a fraction of a second. Powered by the Llama 3.3 70B model and ElevenLabs' multilingual v2 voice engine, Vocalize supports 13+ languages including Tamil, Hindi, Arabic, Japanese, and more — enabling genuine cross-language dialogue without switching apps or manual translation.
-      </p>
-      <div class="project-tags" style="margin-top:1rem;">
+    <div class="project-info">
+      <div>
+        <div class="section-label" style="margin-bottom:0.75rem;">About this project</div>
+        <p class="project-desc" style="text-align: justify;">
+          <strong>Vocalize</strong> is a <strong>Multilingual AI Voice Translator</strong> built to bridge language barriers in real time. Speak in your native tongue — the agent captures your voice, processes it through Groq's blazing-fast LLM inference, and speaks a natural-sounding reply back in the same language in a fraction of a second. Powered by the Llama 3.3 70B model and ElevenLabs' multilingual v2 voice engine, Vocalize supports 13+ languages including Tamil, Hindi, Arabic, Japanese, and more.
+        </p>
       </div>
-    </div>
-    <div>
+      <div>
         <div class="section-label" style="margin-bottom:0.75rem;">Team Members</div>
         <div style="display:flex;flex-direction:column;gap:0.6rem;">
           <div style="display:flex;justify-content:space-between;font-size:0.78rem;padding:0.6rem 0.85rem;background:var(--surface2);border-radius:var(--radius-sm);border:1px solid var(--border);">
@@ -909,8 +915,6 @@ footer {
   <div class="footer-inner">
     <div>
       <div class="footer-studio">Design Studio II</div>
-      <div class="footer-team" style="margin-top:0.4rem;">
-      </div>
     </div>
     <div style="text-align:right;">
       <div style="font-family:'Fraunces',serif;font-size:1.2rem;color:rgba(255,255,255,0.85);">Vocalize<span style="color:var(--orange)">.</span></div>
@@ -924,12 +928,18 @@ footer {
 <script>
 let isListening      = false;
 let isSpeaking       = false;
-let autoRestart      = false;   
 let terminated       = false;
 let conversationHistory = [];
 let savedGroqKey     = '';
 let savedElevenKey   = '';
 let msgCount         = 0;
+
+// ── FIX 1: locale map used both for recognition lang AND tts speak lang ──
+const LOCALE_MAP = {
+  'English':'en-US','Spanish':'es-ES','French':'fr-FR','German':'de-DE',
+  'Japanese':'ja-JP','Korean':'ko-KR','Chinese':'zh-CN','Arabic':'ar-SA',
+  'Hindi':'hi-IN','Portuguese':'pt-BR','Tamil':'ta-IN','Russian':'ru-RU','Italian':'it-IT'
+};
 
 const ELEVEN_VOICE_ID = 'N2lVS1w4EtoT3dr4eOWO';
 
@@ -942,10 +952,7 @@ function showToast(msg, type = 'info') {
 
 function saveGroqKey() {
   const val = document.getElementById('apiKey').value.trim();
-  if (!val.startsWith('gsk_')) {
-    showToast('Groq key must start with gsk_ — check and try again', 'error');
-    return;
-  }
+  if (!val.startsWith('gsk_')) { showToast('Groq key must start with gsk_ — check and try again', 'error'); return; }
   savedGroqKey = val;
   document.getElementById('groqSavedBadge').classList.add('show');
   setStatus('Ready! Press the mic and speak 🎙️', '');
@@ -974,6 +981,11 @@ function updateTtsQuality() {
   }
 }
 
+function onRoleChange() {
+  const role = document.getElementById('agentRole').value;
+  document.getElementById('translatorRow').style.display = (role === 'translator') ? 'block' : 'none';
+}
+
 function setStatus(msg, type) {
   const el  = document.getElementById('statusText');
   const dot = document.getElementById('statusDot');
@@ -983,9 +995,8 @@ function setStatus(msg, type) {
 }
 
 function setWaveform(state) {
-  const lw = document.getElementById('liveWaveform');
-  const hw = document.getElementById('heroWave');
-  const bars = hw.querySelectorAll('.wave-bar');
+  const lw   = document.getElementById('liveWaveform');
+  const bars = document.getElementById('heroWave').querySelectorAll('.wave-bar');
   if (state === 'listening') {
     lw.classList.add('active');
     bars.forEach(b => b.classList.add('active'));
@@ -995,8 +1006,9 @@ function setWaveform(state) {
   }
 }
 
+// ── FIX 2: create recognition ONCE; never re-create it ──
 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-let recognition;
+let recognition = null;
 
 if (SpeechRecognition) {
   recognition = new SpeechRecognition();
@@ -1011,16 +1023,13 @@ if (SpeechRecognition) {
   };
 
   recognition.onerror = (e) => {
-    if (e.error === 'aborted') return; 
+    if (e.error === 'aborted' || e.error === 'no-speech') return;
     stopListening();
     setStatus('Mic error: ' + e.error + ' — check browser permissions', 'error');
   };
 
   recognition.onend = () => {
-    if (isListening) {
-      isListening = false;
-      updateMicUI(false);
-    }
+    if (isListening) { isListening = false; updateMicUI(false); }
   };
 } else {
   document.getElementById('statusText').textContent =
@@ -1036,8 +1045,16 @@ function toggleListening() {
 
 function startListening() {
   if (!recognition) return;
-  const lang = document.getElementById('inputLang').value;
-  recognition.lang = lang;
+  const role = document.getElementById('agentRole').value;
+
+  // ── FIX 2 continued: always set a real locale — never empty string ──
+  // For Translator mode use the inputLang as the speech recognition locale
+  // (browser needs to know what language to listen for; we set it to the
+  //  selected "Your language" so the mic works without re-prompting).
+  // The AI translation target is handled separately in buildSystemPrompt.
+  const locale = document.getElementById('inputLang').value;
+  recognition.lang = locale;   // always a valid BCP-47 tag — no empty string
+
   try { recognition.start(); } catch(e) { return; }
   isListening = true;
   updateMicUI(true);
@@ -1047,7 +1064,7 @@ function startListening() {
 }
 
 function stopListening() {
-  try { recognition.stop(); } catch(e) {}
+  try { recognition.abort(); } catch(e) {}   // abort is cleaner than stop — avoids spurious onend loops
   isListening = false;
   updateMicUI(false);
   setWaveform('idle');
@@ -1057,10 +1074,8 @@ function updateMicUI(listening) {
   const btn  = document.getElementById('micBtn');
   const ring = document.getElementById('micRing');
   if (listening) {
-    btn.classList.add('listening');
-    btn.classList.remove('speaking');
-    ring.classList.add('listening');
-    ring.classList.remove('speaking');
+    btn.classList.add('listening'); btn.classList.remove('speaking');
+    ring.classList.add('listening'); ring.classList.remove('speaking');
     btn.textContent = '⏹️';
   } else if (!isSpeaking) {
     btn.classList.remove('listening', 'speaking');
@@ -1074,10 +1089,8 @@ function setSpeakingUI(speaking) {
   const ring = document.getElementById('micRing');
   isSpeaking = speaking;
   if (speaking) {
-    btn.classList.remove('listening');
-    btn.classList.add('speaking');
-    ring.classList.remove('listening');
-    ring.classList.add('speaking');
+    btn.classList.remove('listening'); btn.classList.add('speaking');
+    ring.classList.remove('listening'); ring.classList.add('speaking');
     btn.textContent = '🔊';
     setStatus('Speaking response…', 'speaking');
   } else {
@@ -1089,7 +1102,6 @@ function setSpeakingUI(speaking) {
 
 function terminateSession() {
   terminated = true;
-  autoRestart = false;
   stopListening();
   window.speechSynthesis.cancel();
   isSpeaking = false;
@@ -1127,14 +1139,14 @@ function addMessage(role, text, langCode) {
   document.getElementById('convCount').textContent =
     msgCount + ' message' + (msgCount !== 1 ? 's' : '');
 
-  const div = document.createElement('div');
+  const div  = document.createElement('div');
   div.className = 'message ' + role;
 
   const meta = document.createElement('div');
   meta.className = 'msg-meta';
   if (role === 'user') {
-    const lang = document.getElementById('inputLang');
-    meta.textContent = lang.options[lang.selectedIndex].text.replace(/^.+ /, '') + ' · You';
+    const sel = document.getElementById('inputLang');
+    meta.textContent = sel.options[sel.selectedIndex].text.replace(/^.+ /, '') + ' · You';
   } else {
     meta.textContent = (langCode ? langCode.split('-')[0].toUpperCase() : 'AI') + ' · Vocalize';
   }
@@ -1157,6 +1169,21 @@ function showThinking() {
 }
 function hideThinking() { document.getElementById('thinkingDot')?.remove(); }
 
+function buildSystemPrompt(role, lang) {
+  if (role === 'translator') {
+    const targetLang = document.getElementById('targetLang').value;
+    return `You are a professional translator.
+The user will speak or type in any language.
+Your ONLY job is to translate their exact words into ${targetLang}.
+Output ONLY the translated text — no explanations, no notes, no original text, no extra commentary.
+Do not add anything beyond the translation itself.`;
+  }
+  return `You are a ${role}. The user is speaking in locale ${lang}.
+Always reply in the EXACT same language the user used.
+Keep replies to 2-3 sentences maximum — responses will be read aloud.
+Do not use markdown, bullet points, or special symbols.`;
+}
+
 async function getAIResponse(userText) {
   if (terminated) return;
   const role = document.getElementById('agentRole').value;
@@ -1173,13 +1200,7 @@ async function getAIResponse(userText) {
         model: 'llama-3.3-70b-versatile',
         max_tokens: 300,
         messages: [
-          {
-            role: 'system',
-            content: `You are a ${role}. The user is speaking in locale ${lang}.
-Always reply in the EXACT same language the user used.
-Keep replies to 2-3 sentences maximum — responses will be read aloud.
-Do not use markdown, bullet points, or special symbols.`
-          },
+          { role: 'system', content: buildSystemPrompt(role, lang) },
           ...conversationHistory
         ]
       })
@@ -1194,8 +1215,18 @@ Do not use markdown, bullet points, or special symbols.`
     const reply = data.choices?.[0]?.message?.content || 'Sorry, I could not generate a response.';
     conversationHistory.push({ role: 'assistant', content: reply });
     hideThinking();
-    addMessage('assistant', reply, lang);
-    if (!terminated) await speak(reply, lang);
+
+    // ── FIX 1: Determine the correct TTS locale ──
+    let ttsLocale;
+    if (role === 'translator') {
+      const targetLang = document.getElementById('targetLang').value;
+      ttsLocale = LOCALE_MAP[targetLang] || 'en-US';
+    } else {
+      ttsLocale = lang;
+    }
+
+    addMessage('assistant', reply, ttsLocale);
+    if (!terminated) await speak(reply, ttsLocale);
 
   } catch (err) {
     hideThinking();
@@ -1216,7 +1247,6 @@ async function speak(text, lang) {
     } else {
       if (engine === 'elevenlabs' && !savedElevenKey) {
         showToast('No ElevenLabs key — using browser TTS', 'info');
-        await new Promise(r => setTimeout(r, 800));
       }
       await speakBrowser(text, lang);
     }
@@ -1259,27 +1289,40 @@ async function speakElevenLabs(text) {
   });
 }
 
+// ── FIX 1 core: speakBrowser now picks the correct voice for the target locale ──
 function speakBrowser(text, lang) {
   return new Promise((resolve) => {
     window.speechSynthesis.cancel();
     const utter = new SpeechSynthesisUtterance(text);
     utter.rate  = 0.95; utter.pitch = 1;
+
     const voices     = speechSynthesis.getVoices();
     const langPrefix = lang.split('-')[0];
-    const voice      = voices.find(v => v.lang === lang)
-                    || voices.find(v => v.lang.startsWith(langPrefix))
-                    || voices.find(v => v.lang.startsWith('en'));
-    if (voice) { utter.voice = voice; utter.lang = voice.lang; }
-    else        { utter.lang = lang; }
-    utter.onend  = resolve;
-    utter.onerror = resolve;
-    speechSynthesis.speak(utter);
+
+    // Priority: exact locale match → same language prefix → fallback to any en voice
+    const voice = voices.find(v => v.lang === lang)
+               || voices.find(v => v.lang.startsWith(langPrefix));
+    // NOTE: removed the final '|| en fallback' — if no matching voice exists,
+    // we let the browser use its default for the lang tag instead of forcing English.
+    if (voice) {
+      utter.voice = voice;
+      utter.lang  = voice.lang;
+    } else {
+      utter.lang = lang;   // browser will pick best available for this locale
+    }
+
     const timeout = setTimeout(resolve, text.length * 80 + 4000);
-    utter.onend = () => { clearTimeout(timeout); resolve(); };
+    utter.onend   = () => { clearTimeout(timeout); resolve(); };
+    utter.onerror = () => { clearTimeout(timeout); resolve(); };
+    speechSynthesis.speak(utter);
   });
 }
 
-speechSynthesis.onvoiceschanged = () => speechSynthesis.getVoices();
+// Pre-load voices so they're available immediately on first speak
+if (typeof speechSynthesis !== 'undefined') {
+  speechSynthesis.getVoices();
+  speechSynthesis.onvoiceschanged = () => speechSynthesis.getVoices();
+}
 
 const observer = new IntersectionObserver((entries) => {
   entries.forEach(e => {
